@@ -68,15 +68,6 @@ messageSchema.index({ createdAt: -1 });
 messageSchema.index({ isRead: 1 });
 messageSchema.index({ isDeleted: 1 });
 
-// Compound index for conversation queries
-messageSchema.index({
-  $or: [
-    { sender: 1, receiver: 1 },
-    { sender: 1, receiver: 1 },
-  ],
-  createdAt: -1,
-});
-
 // Virtual for conversation ID (unique identifier for a conversation between two users)
 messageSchema.virtual("conversationId").get(function () {
   const users = [this.sender.toString(), this.receiver.toString()].sort();

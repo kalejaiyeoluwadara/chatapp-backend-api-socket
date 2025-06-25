@@ -11,7 +11,6 @@ const connectDB = async () => {
         maxPoolSize: 10, // Maintain up to 10 socket connections
         serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
         socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-        bufferMaxEntries: 0, // Disable mongoose buffering
         bufferCommands: false, // Disable mongoose buffering
       }
     );
@@ -66,33 +65,7 @@ const createIndexes = async () => {
   }
 };
 
-// Initialize database with sample data (for development)
-const initializeDatabase = async () => {
-  if (process.env.NODE_ENV === "development") {
-    try {
-      const User = mongoose.model("User");
 
-      // Check if admin user exists
-      const adminExists = await User.findOne({ username: "admin" });
-      if (!adminExists) {
-        const adminUser = new User({
-          username: "admin",
-          email: "kalejaiyeoluwadara1@gmail.com",
-          password: "admin123",
-          firstName: "Kalejaiye",
-          lastName: "Oluwadara",
-          isEmailVerified: true,
-          bio: "System Administrator",
-        });
-
-        await adminUser.save();
-        console.log("Admin user created for development");
-      }
-    } catch (error) {
-      console.error("Error initializing database:", error);
-    }
-  }
-};
 
 // Health check for database
 const checkDatabaseHealth = async () => {
@@ -122,6 +95,5 @@ const checkDatabaseHealth = async () => {
 module.exports = {
   connectDB,
   createIndexes,
-  initializeDatabase,
   checkDatabaseHealth,
 };

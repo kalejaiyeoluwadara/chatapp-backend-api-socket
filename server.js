@@ -7,11 +7,7 @@ const compression = require("compression");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
-const {
-  connectDB,
-  createIndexes,
-  initializeDatabase,
-} = require("./config/database");
+const { connectDB, createIndexes } = require("./config/database");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const friendRoutes = require("./routes/friend");
@@ -131,7 +127,7 @@ app.use((err, req, res, next) => {
 });
 
 // 404 handler
-app.use("*", (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });
 
@@ -149,8 +145,6 @@ const initializeServer = async () => {
     // Create indexes
     await createIndexes();
 
-    // Initialize database with sample data (development only)
-    await initializeDatabase();
 
     // Start server
     server.listen(PORT, () => {

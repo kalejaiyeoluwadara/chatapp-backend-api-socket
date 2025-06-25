@@ -121,8 +121,8 @@ const userSchema = new mongoose.Schema(
 );
 
 // Index for better query performance
-userSchema.index({ username: 1 });
-userSchema.index({ email: 1 });
+// userSchema.index({ username: 1 });
+// userSchema.index({ email: 1 });
 userSchema.index({ isOnline: 1 });
 
 // Hash password before saving
