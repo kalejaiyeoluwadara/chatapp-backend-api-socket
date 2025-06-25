@@ -1,19 +1,23 @@
-const sgMail = require("@sendgrid/mail");
-
-// Configure SendGrid
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const nodemailer = require("nodemailer");
 
 class EmailService {
   constructor() {
-    this.fromEmail = process.env.SENDGRID_FROM_EMAIL;
+    this.fromEmail = process.env.EMAIL_USER;
     this.baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_APP_PASSWORD,
+      },
+    });
   }
 
   // Send email verification
   async sendVerificationEmail(email, username, token) {
     const verificationUrl = `${this.baseUrl}/api/auth/verify-email?token=${token}`;
 
-    const msg = {
+    const mailOptions = {
       to: email,
       from: this.fromEmail,
       subject: "Verify Your Email Address",
@@ -41,13 +45,10 @@ class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      await this.transporter.sendMail(mailOptions);
       return { success: true, message: "Verification email sent successfully" };
     } catch (error) {
-      console.error("SendGrid error:", error);
-      if (error.response) {
-        console.error("SendGrid response body:", error.response.body);
-      }
+      console.error("Nodemailer error:", error);
       throw new Error("Failed to send verification email");
     }
   }
@@ -56,7 +57,7 @@ class EmailService {
   async sendPasswordResetEmail(email, username, token) {
     const resetUrl = `${this.baseUrl}/api/auth/reset-password?token=${token}`;
 
-    const msg = {
+    const mailOptions = {
       to: email,
       from: this.fromEmail,
       subject: "Reset Your Password",
@@ -84,20 +85,20 @@ class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      await this.transporter.sendMail(mailOptions);
       return {
         success: true,
         message: "Password reset email sent successfully",
       };
     } catch (error) {
-      console.error("SendGrid error:", error);
+      console.error("Nodemailer error:", error);
       throw new Error("Failed to send password reset email");
     }
   }
 
   // Send friend request notification
   async sendFriendRequestEmail(email, username, requesterName) {
-    const msg = {
+    const mailOptions = {
       to: email,
       from: this.fromEmail,
       subject: "New Friend Request",
@@ -116,20 +117,20 @@ class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      await this.transporter.sendMail(mailOptions);
       return {
         success: true,
         message: "Friend request notification sent successfully",
       };
     } catch (error) {
-      console.error("SendGrid error:", error);
+      console.error("Nodemailer error:", error);
       throw new Error("Failed to send friend request notification");
     }
   }
 
   // Send welcome email after verification
   async sendWelcomeEmail(email, username) {
-    const msg = {
+    const mailOptions = {
       to: email,
       from: this.fromEmail,
       subject: "Welcome to ChatApp!",
@@ -154,10 +155,10 @@ class EmailService {
     };
 
     try {
-      await sgMail.send(msg);
+      await this.transporter.sendMail(mailOptions);
       return { success: true, message: "Welcome email sent successfully" };
     } catch (error) {
-      console.error("SendGrid error:", error);
+      console.error("Nodemailer error:", error);
       throw new Error("Failed to send welcome email");
     }
   }
